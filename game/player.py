@@ -11,15 +11,49 @@ class Puller:
         self.label = label
         self.font = pygame.font.SysFont(None, 24)
 
-    def render(self, surface):
-        """Draw avatar and label."""
-        # Body
-        body_rect = pygame.Rect(self.x - 20, self.y - 35, 40, 70)
-        pygame.draw.rect(surface, self.color, body_rect, border_radius=6)
+        # Dynamic leaning amount
+        self.lean = 0.0
 
-        # Head
-        pygame.draw.circle(surface, (240, 210, 180), (self.x, self.y - 50), 16)
+    def render(self, surface):
+        """Draw avatar with dynamic leaning."""
+
+        lean = int(self.lean)
+
+        # Body becomes slightly slanted based on lean direction
+        body_points = [
+            (self.x - 20, self.y - 35),
+            (self.x + 20, self.y - 35),
+            (self.x + 20 + lean, self.y + 35),
+            (self.x - 20 + lean, self.y + 35)
+        ]
+
+        pygame.draw.polygon(
+            surface,
+            self.color,
+            body_points
+        )
+
+        # Head follows the leaning direction
+        head_x = self.x + int(lean * 1.2)
+
+        pygame.draw.circle(
+            surface,
+            (240, 210, 180),
+            (head_x, self.y - 50),
+            16
+        )
 
         # Name / control tag
-        label_surf = self.font.render(self.label, True, (240, 240, 240))
-        surface.blit(label_surf, (self.x - label_surf.get_width() // 2, self.y + 45))
+        label_surf = self.font.render(
+            self.label,
+            True,
+            (240, 240, 240)
+        )
+
+        surface.blit(
+            label_surf,
+            (
+                self.x - label_surf.get_width() // 2,
+                self.y + 45
+            )
+        )
